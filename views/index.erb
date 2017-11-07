@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>index</title>
+    <script src="/jsonpipe.js"></script>
+    <script src="/jquery-3.2.1.min.js"></script>
+  </head>
+  <body>
+    <form id="message_form">
+      <textarea id="message_body" name="message_body"></textarea>
+      <input id="message_submit" type="submit" value="submit" />
+    </form>
+    <ul id="message_list">
+    </ul>
+    <script>
+      $(function() {
+        $("#message_form").on("submit", function(event) {
+          event.preventDefault();
+          var body = $("#message_body").val();
+          $.ajax({
+            url:  "/messages",
+            method: "POST",
+            data: { body: body },
+          }).done(function() {
+            $("#message_body").val("");
+          });
+        });
+
+        var $messageList = $("#message_list");
+        jsonpipe.flow("<%= stream_url %>", {
+          "success": function(data) {
+            $("<li></li>").text(data.body).appendTo($messageList);
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
